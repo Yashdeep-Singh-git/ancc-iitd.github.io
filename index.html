@@ -28,7 +28,7 @@
               <a class="nav-link" href="socp.html">SoCP 2021</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="team-2021.html">Team 2021</a>
+              <a class="nav-link" href="previous-team.html">Team 2023</a>
             </li>
           </ul>
         </div>
@@ -134,15 +134,30 @@
       }
       function getTeam() {
         let Sheet = new XMLHttpRequest();
-        Sheet.open("GET","https://docs.google.com/spreadsheets/d/1Hv9U4-Zu-gCquH2Ikyab0ZRKOcTGAO0HfjDmMntfUpM/export?format=tsv",true);
+        Sheet.open("GET","https://docs.google.com/spreadsheets/d/16Gp1oacm_Nwp8ZH8F8RqVIE5MMwMjYp7Z7IIYruwI78/export?format=tsv",true);
+
         Sheet.onload = () => {
           let values=Sheet.responseText;
           document.getElementById('teamH').style="display:block;";
+          let index=[];
+          let firstRow=true;
           let rows=values.split('\r');
           teamstr="";
           rows.forEach(r=> {
             cols=r.split('\t');
-            teamstr+=generateCard(cols[0],cols[1],cols[2],cols[3],cols[4]);
+            
+            if(firstRow){
+              cols.forEach(col=>index.push(col));
+            }
+            else {
+              let detailsMap={};
+              for(let i=0;i<cols.length;i++){
+                detailsMap[index[i]]=cols[i];
+              }
+              teamstr+=generateCard(detailsMap["Name"],detailsMap["Position"],detailsMap["Handle"],detailsMap["Github Username"],detailsMap["LinkedIn Profile"]);
+
+            }
+            firstRow=false;
           })
           document.getElementById('team').innerHTML=teamstr;
           updateColors();
